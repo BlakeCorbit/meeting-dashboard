@@ -73,6 +73,7 @@
     gap: 0.5rem;
   }
   header h1 { font-size: 1.35rem; color: #f8fafc; }
+  .header-right { display: flex; align-items: center; gap: 1rem; }
   .updated { color: #64748b; font-size: 0.8rem; }
 
   .stats-bar {
@@ -87,11 +88,12 @@
     border-radius: 10px;
     padding: 1rem 1.5rem;
     flex: 1;
-    min-width: 150px;
+    min-width: 130px;
   }
   .stat-card .label { color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
   .stat-card .value { font-size: 1.75rem; font-weight: 700; color: #f8fafc; margin-top: 0.25rem; }
   .stat-card.open .value { color: #f59e0b; }
+  .stat-card.overdue .value { color: #f87171; }
   .stat-card.progress .value { color: #3b82f6; }
   .stat-card.done .value { color: #22c55e; }
   .stat-card.meetings .value { color: #a78bfa; }
@@ -99,12 +101,18 @@
   main { padding: 0 2rem 2rem; }
 
   section { margin-bottom: 2rem; }
-  section h2 {
-    font-size: 1.1rem;
-    color: #cbd5e1;
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #1e293b;
+  }
+  .section-header h2 {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+    margin: 0;
   }
 
   table {
@@ -140,6 +148,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    cursor: pointer;
   }
   .badge.open { background: #422006; color: #fbbf24; }
   .badge.in-progress { background: #172554; color: #60a5fa; }
@@ -148,12 +157,89 @@
 
   .empty { color: #475569; font-style: italic; padding: 1.5rem; text-align: center; }
 
+  /* --- Buttons --- */
+  .btn {
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-primary { background: #3b82f6; color: #fff; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-success { background: #16a34a; color: #fff; }
+  .btn-success:hover { background: #15803d; }
+  .btn-ghost { background: transparent; border: 1px solid #475569; color: #94a3b8; }
+  .btn-ghost:hover { background: #1e293b; color: #e2e8f0; }
+  .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
+
+  .action-btns { display: flex; gap: 0.35rem; flex-wrap: nowrap; }
+
+  /* --- Modal --- */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .modal h3 { color: #f8fafc; margin-bottom: 1rem; }
+  .modal label { display: block; color: #94a3b8; font-size: 0.8rem; margin-bottom: 0.25rem; margin-top: 0.75rem; }
+  .modal input, .modal textarea, .modal select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+    outline: none;
+    font-family: inherit;
+  }
+  .modal textarea { resize: vertical; min-height: 60px; }
+  .modal input:focus, .modal textarea:focus, .modal select:focus { border-color: #3b82f6; }
+  .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; justify-content: flex-end; }
+
+  .notes-cell { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #64748b; font-size: 0.8rem; }
+  .notes-cell:hover { white-space: normal; overflow: visible; }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #16a34a;
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    z-index: 200;
+    transition: opacity 0.3s;
+  }
+  .toast.hide { opacity: 0; }
+
   @media (max-width: 768px) {
     header { padding: 1rem; }
-    .stats-bar { padding: 1rem; }
+    .stats-bar { padding: 1rem; gap: 0.5rem; }
     main { padding: 0 1rem 1rem; }
     table { font-size: 0.8rem; }
     thead th, tbody td { padding: 0.5rem; }
+    .stat-card { padding: 0.75rem; min-width: 70px; }
+    .stat-card .value { font-size: 1.3rem; }
   }
 </style>
 </head>
@@ -174,10 +260,13 @@
 <div id="dashboard">
   <header>
     <h1>Meeting Action Items</h1>
-    <span class="updated" id="lastUpdated"></span>
+    <div class="header-right">
+      <span class="updated" id="lastUpdated"></span>
+    </div>
   </header>
 
   <div class="stats-bar">
+    <div class="stat-card overdue"><div class="label">Overdue</div><div class="value" id="statOverdue">0</div></div>
     <div class="stat-card open"><div class="label">Open</div><div class="value" id="statOpen">0</div></div>
     <div class="stat-card progress"><div class="label">In Progress</div><div class="value" id="statProgress">0</div></div>
     <div class="stat-card done"><div class="label">Completed</div><div class="value" id="statDone">0</div></div>
@@ -186,7 +275,10 @@
 
   <main>
     <section>
-      <h2>Open Action Items</h2>
+      <div class="section-header">
+        <h2>Open Action Items</h2>
+        <button class="btn btn-primary" onclick="openAddModal()">+ Add Item</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -196,6 +288,8 @@
             <th>Due Date</th>
             <th>Status</th>
             <th>Meeting</th>
+            <th>Notes</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="openItems"></tbody>
@@ -203,7 +297,9 @@
     </section>
 
     <section>
-      <h2>Completed</h2>
+      <div class="section-header">
+        <h2>Completed</h2>
+      </div>
       <table>
         <thead>
           <tr>
@@ -212,6 +308,7 @@
             <th>Owner</th>
             <th>Completed</th>
             <th>Meeting</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="completedItems"></tbody>
@@ -219,7 +316,9 @@
     </section>
 
     <section>
-      <h2>Recent Meetings</h2>
+      <div class="section-header">
+        <h2>Recent Meetings</h2>
+      </div>
       <table>
         <thead>
           <tr>
@@ -235,8 +334,37 @@
   </main>
 </div>
 
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3 id="modalTitle">Add Action Item</h3>
+    <input type="hidden" id="editId">
+    <label>Action Item *</label>
+    <textarea id="fItem" placeholder="What needs to be done?"></textarea>
+    <label>Owner</label>
+    <input id="fOwner" placeholder="Who's responsible?" value="Blake">
+    <label>Due Date</label>
+    <input id="fDue" type="date">
+    <label>Status</label>
+    <select id="fStatus">
+      <option value="open">Open</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+    </select>
+    <label>Meeting Source</label>
+    <input id="fMeeting" placeholder="Meeting title (optional)">
+    <label>Notes</label>
+    <textarea id="fNotes" placeholder="Additional context"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveItem()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const HASH = "21fe4f465e08689650fb8cebe984cdb622a776f678a90558c90901325cebd887";
+let DATA = { lastUpdated: "", actionItems: [], meetings: [] };
 
 async function sha256(text) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -269,82 +397,286 @@ async function showDashboard() {
   await loadData();
 }
 
+// --- Local overrides ---
+function getOverrides() {
+  try { return JSON.parse(localStorage.getItem("dash_overrides") || "{}"); } catch { return {}; }
+}
+
+function saveOverrides(o) {
+  localStorage.setItem("dash_overrides", JSON.stringify(o));
+}
+
+function getLocalAdds() {
+  try { return JSON.parse(localStorage.getItem("dash_local_adds") || "[]"); } catch { return []; }
+}
+
+function saveLocalAdds(a) {
+  localStorage.setItem("dash_local_adds", JSON.stringify(a));
+}
+
 // --- Data ---
 async function loadData() {
   try {
     const res = await fetch("data.json?t=" + Date.now());
-    const data = await res.json();
-    render(data);
+    DATA = await res.json();
   } catch (e) {
     console.error("Failed to load data:", e);
   }
+  applyOverrides();
+  render();
 }
 
-function render(data) {
-  // Last updated
-  if (data.lastUpdated) {
-    const d = new Date(data.lastUpdated);
+function applyOverrides() {
+  const overrides = getOverrides();
+  for (const item of DATA.actionItems) {
+    if (overrides[item.id]) {
+      Object.assign(item, overrides[item.id]);
+    }
+  }
+  // Append local adds
+  const localAdds = getLocalAdds();
+  for (const la of localAdds) {
+    if (!DATA.actionItems.find(i => i.id === la.id)) {
+      DATA.actionItems.push(la);
+    }
+  }
+}
+
+function render() {
+  const now = new Date();
+  if (DATA.lastUpdated) {
+    const d = new Date(DATA.lastUpdated);
     document.getElementById("lastUpdated").textContent = "Updated " + d.toLocaleString();
   }
 
-  const items = data.actionItems || [];
-  const open = items.filter(i => i.status === "open" || i.status === "in-progress");
-  const done = items.filter(i => i.status === "completed");
-  const inProg = items.filter(i => i.status === "in-progress");
+  const items = DATA.actionItems || [];
+
+  // Compute effective status
+  const effective = items.map(i => {
+    const overdue = i.dueDate && new Date(i.dueDate) < now && i.status !== "completed";
+    return { ...i, effectiveStatus: overdue ? "overdue" : i.status };
+  });
+
+  const open = effective.filter(i => i.effectiveStatus === "open" || i.effectiveStatus === "in-progress" || i.effectiveStatus === "overdue");
+  const done = effective.filter(i => i.effectiveStatus === "completed");
 
   // Stats
-  document.getElementById("statOpen").textContent = open.filter(i => i.status === "open").length;
-  document.getElementById("statProgress").textContent = inProg.length;
+  document.getElementById("statOverdue").textContent = open.filter(i => i.effectiveStatus === "overdue").length;
+  document.getElementById("statOpen").textContent = open.filter(i => i.effectiveStatus === "open").length;
+  document.getElementById("statProgress").textContent = open.filter(i => i.effectiveStatus === "in-progress").length;
   document.getElementById("statDone").textContent = done.length;
-  document.getElementById("statMeetings").textContent = (data.meetings || []).length;
+  document.getElementById("statMeetings").textContent = (DATA.meetings || []).length;
+
+  // Sort: overdue first, then by due date
+  open.sort((a, b) => {
+    if (a.effectiveStatus === "overdue" && b.effectiveStatus !== "overdue") return -1;
+    if (b.effectiveStatus === "overdue" && a.effectiveStatus !== "overdue") return 1;
+    if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+    return 0;
+  });
 
   // Open items
   const openTbody = document.getElementById("openItems");
   if (open.length === 0) {
-    openTbody.innerHTML = '<tr><td colspan="6" class="empty">No open action items</td></tr>';
+    openTbody.innerHTML = '<tr><td colspan="8" class="empty">No open action items</td></tr>';
   } else {
-    openTbody.innerHTML = open.map(i => {
-      const overdue = i.dueDate && new Date(i.dueDate) < new Date() && i.status !== "completed";
-      const statusClass = overdue ? "overdue" : i.status;
-      const statusLabel = overdue ? "Overdue" : i.status;
-      return `<tr>
-        <td>${i.id}</td>
-        <td>${esc(i.item)}</td>
-        <td>${esc(i.owner || "—")}</td>
-        <td>${i.dueDate || "—"}</td>
-        <td><span class="badge ${statusClass}">${statusLabel}</span></td>
-        <td>${esc(i.meetingTitle || "—")}<br><small style="color:#64748b">${i.meetingDate || ""}</small></td>
-      </tr>`;
-    }).join("");
+    openTbody.innerHTML = open.map(i => `<tr>
+      <td>${i.id}</td>
+      <td>${esc(i.item)}</td>
+      <td>${esc(i.owner || "\u2014")}</td>
+      <td>${i.dueDate || "\u2014"}</td>
+      <td><span class="badge ${i.effectiveStatus}" onclick="cycleStatus(${i.id})">${i.effectiveStatus}</span></td>
+      <td>${esc(i.meetingTitle || "\u2014")}<br><small style="color:#64748b">${i.meetingDate || ""}</small></td>
+      <td class="notes-cell" title="${esc(i.notes || "")}">${esc(i.notes || "")}</td>
+      <td>
+        <div class="action-btns">
+          <button class="btn btn-success btn-sm" onclick="completeItem(${i.id})">Done</button>
+          <button class="btn btn-ghost btn-sm" onclick="editItem(${i.id})">Edit</button>
+        </div>
+      </td>
+    </tr>`).join("");
   }
 
   // Completed items
   const doneTbody = document.getElementById("completedItems");
   if (done.length === 0) {
-    doneTbody.innerHTML = '<tr><td colspan="5" class="empty">No completed items yet</td></tr>';
+    doneTbody.innerHTML = '<tr><td colspan="6" class="empty">No completed items yet</td></tr>';
   } else {
     doneTbody.innerHTML = done.map(i => `<tr>
       <td>${i.id}</td>
       <td>${esc(i.item)}</td>
-      <td>${esc(i.owner || "—")}</td>
-      <td>${i.completedDate || "—"}</td>
-      <td>${esc(i.meetingTitle || "—")}</td>
+      <td>${esc(i.owner || "\u2014")}</td>
+      <td>${i.completedDate || "\u2014"}</td>
+      <td>${esc(i.meetingTitle || "\u2014")}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="reopenItem(${i.id})">Reopen</button></td>
     </tr>`).join("");
   }
 
   // Meetings
   const mtgTbody = document.getElementById("meetingLog");
-  const meetings = data.meetings || [];
+  const meetings = DATA.meetings || [];
   if (meetings.length === 0) {
     mtgTbody.innerHTML = '<tr><td colspan="4" class="empty">No meetings processed yet</td></tr>';
   } else {
     mtgTbody.innerHTML = meetings.slice().reverse().map(m => `<tr>
       <td>${esc(m.title)}</td>
-      <td>${m.date || "—"}</td>
+      <td>${m.date || "\u2014"}</td>
       <td>${esc((m.participants || []).join(", "))}</td>
-      <td>${m.actionItemCount ?? "—"}</td>
+      <td>${m.actionItemCount ?? "\u2014"}</td>
     </tr>`).join("");
   }
+}
+
+// --- Item Actions ---
+function completeItem(id) {
+  const overrides = getOverrides();
+  overrides[id] = overrides[id] || {};
+  overrides[id].status = "completed";
+  overrides[id].completedDate = new Date().toISOString().slice(0, 10);
+  saveOverrides(overrides);
+
+  // Also update local adds
+  const localAdds = getLocalAdds();
+  const la = localAdds.find(i => i.id === id);
+  if (la) { la.status = "completed"; la.completedDate = overrides[id].completedDate; saveLocalAdds(localAdds); }
+
+  const item = DATA.actionItems.find(i => i.id === id);
+  if (item) { item.status = "completed"; item.completedDate = overrides[id].completedDate; }
+  render();
+  toast("Marked as complete");
+}
+
+function reopenItem(id) {
+  const overrides = getOverrides();
+  overrides[id] = overrides[id] || {};
+  overrides[id].status = "open";
+  overrides[id].completedDate = null;
+  saveOverrides(overrides);
+
+  const localAdds = getLocalAdds();
+  const la = localAdds.find(i => i.id === id);
+  if (la) { la.status = "open"; la.completedDate = null; saveLocalAdds(localAdds); }
+
+  const item = DATA.actionItems.find(i => i.id === id);
+  if (item) { item.status = "open"; item.completedDate = null; }
+  render();
+  toast("Reopened");
+}
+
+function cycleStatus(id) {
+  const item = DATA.actionItems.find(i => i.id === id);
+  if (!item) return;
+  const cycle = { open: "in-progress", "in-progress": "open", overdue: "in-progress" };
+  const next = cycle[item.status] || "open";
+
+  const overrides = getOverrides();
+  overrides[id] = overrides[id] || {};
+  overrides[id].status = next;
+  saveOverrides(overrides);
+
+  const localAdds = getLocalAdds();
+  const la = localAdds.find(i => i.id === id);
+  if (la) { la.status = next; saveLocalAdds(localAdds); }
+
+  item.status = next;
+  render();
+}
+
+// --- Add/Edit Modal ---
+function openAddModal() {
+  document.getElementById("modalTitle").textContent = "Add Action Item";
+  document.getElementById("editId").value = "";
+  document.getElementById("fItem").value = "";
+  document.getElementById("fOwner").value = "Blake";
+  document.getElementById("fDue").value = "";
+  document.getElementById("fStatus").value = "open";
+  document.getElementById("fMeeting").value = "";
+  document.getElementById("fNotes").value = "";
+  document.getElementById("modalOverlay").classList.add("active");
+}
+
+function editItem(id) {
+  const item = DATA.actionItems.find(i => i.id === id);
+  if (!item) return;
+  document.getElementById("modalTitle").textContent = "Edit Action Item #" + id;
+  document.getElementById("editId").value = id;
+  document.getElementById("fItem").value = item.item || "";
+  document.getElementById("fOwner").value = item.owner || "";
+  document.getElementById("fDue").value = item.dueDate || "";
+  document.getElementById("fStatus").value = item.status || "open";
+  document.getElementById("fMeeting").value = item.meetingTitle || "";
+  document.getElementById("fNotes").value = item.notes || "";
+  document.getElementById("modalOverlay").classList.add("active");
+}
+
+function closeModal() {
+  document.getElementById("modalOverlay").classList.remove("active");
+}
+
+function saveItem() {
+  const editId = document.getElementById("editId").value;
+  const itemText = document.getElementById("fItem").value.trim();
+  if (!itemText) return;
+
+  const payload = {
+    item: itemText,
+    owner: document.getElementById("fOwner").value.trim() || "Blake",
+    dueDate: document.getElementById("fDue").value || null,
+    status: document.getElementById("fStatus").value,
+    meetingTitle: document.getElementById("fMeeting").value.trim() || "",
+    meetingDate: "",
+    notes: document.getElementById("fNotes").value.trim() || ""
+  };
+
+  if (editId) {
+    // Edit existing
+    const id = parseInt(editId);
+    const overrides = getOverrides();
+    overrides[id] = overrides[id] || {};
+    Object.assign(overrides[id], payload);
+    saveOverrides(overrides);
+
+    const localAdds = getLocalAdds();
+    const la = localAdds.find(i => i.id === id);
+    if (la) { Object.assign(la, payload); saveLocalAdds(localAdds); }
+
+    const item = DATA.actionItems.find(i => i.id === id);
+    if (item) Object.assign(item, payload);
+    toast("Updated #" + id);
+  } else {
+    // Add new
+    const maxId = Math.max(0, ...DATA.actionItems.map(i => i.id || 0));
+    const newId = maxId + 1;
+    const newItem = {
+      id: newId,
+      ...payload,
+      dateAdded: new Date().toISOString().slice(0, 10),
+      completedDate: null
+    };
+    const localAdds = getLocalAdds();
+    localAdds.push(newItem);
+    saveLocalAdds(localAdds);
+    DATA.actionItems.push(newItem);
+    toast("Added #" + newId);
+  }
+
+  closeModal();
+  render();
+}
+
+// Close modal on backdrop click
+document.getElementById("modalOverlay").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// --- Toast ---
+function toast(msg) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => { el.classList.add("hide"); }, 2000);
+  setTimeout(() => { el.remove(); }, 2500);
 }
 
 function esc(s) {
