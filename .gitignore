@@ -1,0 +1,6 @@
+.sync-state.json
+meetings-dump.json
+seed-state.js
+extract.js
+scan.js
+node_modules/
