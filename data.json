@@ -231,15 +231,63 @@
     },
     {
       "id": 20,
-      "item": "Process Cory/Blake meeting (2/13) once notes are available",
+      "item": "Develop team charter with success metrics and stakeholder input",
       "owner": "Blake",
-      "dueDate": "2026-02-14",
+      "dueDate": "2026-02-28",
       "status": "open",
       "meetingTitle": "Cory / Blake",
       "meetingDate": "2026-02-13",
-      "dateAdded": "2026-02-13",
+      "dateAdded": "2026-02-14",
       "completedDate": null,
-      "notes": "Meeting just happened — no panel content yet. Check back once Granola processes it."
+      "notes": "Every team needs quantifiable success definition. Gather input from Engineering, CS, Product on 'more of/less of'. Measurable goals: resolution time, NPS scores."
+    },
+    {
+      "id": 21,
+      "item": "Practice reframing conversations — present plans instead of seeking direction",
+      "owner": "Blake",
+      "dueDate": null,
+      "status": "open",
+      "meetingTitle": "Cory / Blake",
+      "meetingDate": "2026-02-13",
+      "dateAdded": "2026-02-14",
+      "completedDate": null,
+      "notes": "Don't show up with 'empty shelves'. Present observations + proposed solutions. Ask 'How does this align?' not 'Tell me what to do.'"
+    },
+    {
+      "id": 22,
+      "item": "Create standard email testing procedure documentation",
+      "owner": "Blake",
+      "dueDate": "2026-02-21",
+      "status": "open",
+      "meetingTitle": "Cory / Blake",
+      "meetingDate": "2026-02-13",
+      "dateAdded": "2026-02-14",
+      "completedDate": null,
+      "notes": "Different team members using different methods. Cache reset critical to avoid SMTP fallback errors."
+    },
+    {
+      "id": 23,
+      "item": "Resolve domain change requests — Sports Marine and Carsmith",
+      "owner": "Cory Berg",
+      "dueDate": "2026-02-21",
+      "status": "open",
+      "meetingTitle": "Cory / Blake",
+      "meetingDate": "2026-02-13",
+      "dateAdded": "2026-02-14",
+      "completedDate": null,
+      "notes": "Sports Marine → sportsmarineneport.avims.us. Carsmith → carsmith.avims.us. Tickets 19018 and 19152."
+    },
+    {
+      "id": 24,
+      "item": "Start daily 20-min meditation practice",
+      "owner": "Blake",
+      "dueDate": null,
+      "status": "open",
+      "meetingTitle": "Cory / Blake",
+      "meetingDate": "2026-02-13",
+      "dateAdded": "2026-02-14",
+      "completedDate": null,
+      "notes": "Cory's recommendation: 6+ months to see results. Goal is turning down 'monkey mind', not stopping thoughts. Cory sending meditation resources."
     }
   ],
   "meetings": [
@@ -247,7 +295,7 @@
       "title": "Cory / Blake",
       "date": "2026-02-13",
       "participants": ["Blake", "Cory Berg"],
-      "actionItemCount": 0
+      "actionItemCount": 5
     },
     {
       "title": "TS Stand Up *Special Guest*",
